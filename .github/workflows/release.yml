@@ -1,0 +1,58 @@
+name: Tag and Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Fetch all tags
+        run: |
+          git fetch --tags
+
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          TAG=$(git tag --sort=-v:refname | head -n 1)
+          if [ -z "$TAG" ]; then
+            TAG="v0.0.0"
+          fi
+          echo "Latest tag is $TAG"
+          echo "LATEST_TAG=${TAG}" >> $GITHUB_ENV
+
+      - name: Increment patch version
+        id: increment_patch
+        run: |
+          TAG="${{ env.LATEST_TAG }}"
+          echo "Current tag: $TAG"
+          VERSION=${TAG#v}
+          echo "Version without 'v': $VERSION"
+          IFS='.' read -r -a VERSION_ARRAY <<< "$VERSION"
+          echo "Version array: ${VERSION_ARRAY[@]}"
+          PATCH=$((VERSION_ARRAY[2] + 1))
+          echo "New patch version: $PATCH"
+          NEW_TAG="v${VERSION_ARRAY[0]}.${VERSION_ARRAY[1]}.$PATCH"
+          echo "New tag: $NEW_TAG"
+          echo "NEW_TAG=${NEW_TAG}" >> $GITHUB_ENV
+
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          echo "Checking if tag ${{ env.NEW_TAG }} exists..."
+          if git ls-remote --tags origin | grep "${{ env.NEW_TAG }}" >/dev/null 2>&1; then
+            echo "Tag ${{ env.NEW_TAG }} already exists."
+            exit 1
+          fi
+
+      - name: Create new tag
+        run: |
+          echo "Creating new tag ${{ env.NEW_TAG }}"
+          git tag ${{ env.NEW_TAG }}
+          git push origin ${{ env.NEW_TAG }}
