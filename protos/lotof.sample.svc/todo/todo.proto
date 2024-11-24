@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "./;generated";
+option go_package = "lotof.sample.svc/todo;todo";
 
 package todoservice;
 
