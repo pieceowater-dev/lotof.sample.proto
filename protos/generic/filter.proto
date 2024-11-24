@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "./;generated";
+
+package generic;
+
+// Pagination options.
+message Pagination {
+  int32 page = 1; // The page number.
+  int32 length = 2; // The number of items per page.
+}
+
+// Sorting options.
+message Sort {
+  string field = 1; // The field to sort by.
+  string direction = 2; // The sort direction (e.g., ASC, DESC).
+}

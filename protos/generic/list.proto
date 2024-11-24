@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option go_package = "./;generated";
+
+package generic;
+
+// Pagination metadata.
+message PaginationInfo {
+  int32 count = 1; // Total number of items.
+}
