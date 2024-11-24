@@ -1,4 +1,4 @@
-package main
+package lotof_sample_proto
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 
 const (
 	yellowColor = "\033[33m"
-	resetColor  = "\033[0m" 
+	resetColor  = "\033[0m"
 )
 
 func getModuleName() string {
