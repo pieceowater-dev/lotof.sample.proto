@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "generic/filter;filter";
+option go_package = "./;generated";
 
 package generic;
 
