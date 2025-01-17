@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+//option go_package = "./;generated";
+//option go_package = "./;generated/lotof.sample.svc/domainItem";
+//option go_package = "app/internal/core/grpc/generated/lotof.sample.svc/domainItem";
+option go_package = "internal/core/grpc/generated/lotof.sample.svc/domainItem";
+
+package domainItemService;
+
+// DomainItemService provides methods to query and mutate domain items.
+service DomainItemService {
+  // SomeQueryMethod retrieves something based on the provided request.
+  rpc SomeQueryMethod(GetSomethingRequest) returns (GetSomethingResponse);
+
+  // SomeMutationMethod creates something based on the provided request.
+  rpc SomeMutationMethod(CreateSomethingRequest) returns (Something);
+}
+
+// SomeEnum represents an example enumeration.
+enum SomeEnum {
+  HELLO = 0; // Represents a hello state.
+  WORLD = 1; // Represents a world state.
+}
+
+// GetSomethingRequest is the request message for SomeQueryMethod.
+message GetSomethingRequest {
+  string id = 1; // The ID of the item to retrieve.
+}
+
+// GetSomethingResponse is the response message for SomeQueryMethod.
+message GetSomethingResponse {
+  repeated Something somethings = 1; // A list of retrieved items.
+}
+
+// Something represents an example entity.
+message Something {
+  string id = 1; // The ID of the entity.
+  SomeEnum someEnum = 3; // The enumeration value associated with the entity.
+}
+
+// CreateSomethingRequest is the request message for SomeMutationMethod.
+message CreateSomethingRequest {
+  string id = 1; // The ID of the entity to create.
+  SomeEnum someEnum = 2; // The enumeration value associated with the entity.
+}
