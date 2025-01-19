@@ -1,8 +1,5 @@
 syntax = "proto3";
 
-//option go_package = "./;generated";
-//option go_package = "./;generated/lotof.sample.svc/domainItem";
-//option go_package = "app/internal/core/grpc/generated/lotof.sample.svc/domainItem";
 option go_package = "lotof.sample.proto/lotof.sample.svc/domainItem";
 
 package domainItemService;
