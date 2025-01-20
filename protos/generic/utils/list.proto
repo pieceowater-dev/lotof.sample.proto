@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "lotof.sample.proto/generic";
+option go_package = "app/internal/core/grpc/generated/generic/utils";
 
 package generic;
 
