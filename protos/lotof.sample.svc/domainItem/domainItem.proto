@@ -2,41 +2,62 @@ syntax = "proto3";
 
 option go_package = "app/internal/core/grpc/generated/lotof.sample.svc/domainItem";
 
-package domainItemService;
+package domainItem;
 
-// DomainItemService provides methods to query and mutate domain items.
-service DomainItemService {
-  // SomeQueryMethod retrieves something based on the provided request.
-  rpc SomeQueryMethod(GetSomethingRequest) returns (GetSomethingResponse);
+import "generic/utils/filter.proto";
+import "generic/utils/list.proto";
 
-  // SomeMutationMethod creates something based on the provided request.
-  rpc SomeMutationMethod(CreateSomethingRequest) returns (Something);
+// SampleDomainItemService is the example CRUD service this template ships
+// with, wired end to end (proto -> svc repo/ent/ctrl -> gtw resolvers) so a
+// new service can be bootstrapped by deleting/renaming this one module
+// instead of wiring a domain from scratch. See each repo's README for the
+// exact rename/delete steps.
+service SampleDomainItemService {
+  rpc CreateDomainItem(CreateDomainItemRequest) returns (DomainItem);
+  rpc GetDomainItem(GetDomainItemRequest) returns (DomainItem);
+  rpc ListDomainItems(ListDomainItemsRequest) returns (ListDomainItemsResponse);
+  rpc UpdateDomainItem(UpdateDomainItemRequest) returns (DomainItem);
+  rpc DeleteDomainItem(DeleteDomainItemRequest) returns (DeleteDomainItemResponse);
 }
 
-// SomeEnum represents an example enumeration.
-enum SomeEnum {
-  HELLO = 0; // Represents a hello state.
-  WORLD = 1; // Represents a world state.
+enum DomainItemStatus {
+  ACTIVE = 0;
+  ARCHIVED = 1;
 }
 
-// GetSomethingRequest is the request message for SomeQueryMethod.
-message GetSomethingRequest {
-  string id = 1; // The ID of the item to retrieve.
+message DomainItem {
+  string id = 1;
+  string name = 2;
+  DomainItemStatus status = 3;
 }
 
-// GetSomethingResponse is the response message for SomeQueryMethod.
-message GetSomethingResponse {
-  repeated Something somethings = 1; // A list of retrieved items.
+message CreateDomainItemRequest {
+  string name = 1;
 }
 
-// Something represents an example entity.
-message Something {
-  string id = 1; // The ID of the entity.
-  SomeEnum someEnum = 3; // The enumeration value associated with the entity.
+message GetDomainItemRequest {
+  string id = 1;
 }
 
-// CreateSomethingRequest is the request message for SomeMutationMethod.
-message CreateSomethingRequest {
-  string id = 1; // The ID of the entity to create.
-  SomeEnum someEnum = 2; // The enumeration value associated with the entity.
+message ListDomainItemsRequest {
+  utils.Pagination pagination = 1;
+}
+
+message ListDomainItemsResponse {
+  repeated DomainItem domain_items = 1;
+  utils.PaginationInfo pagination_info = 2;
+}
+
+message UpdateDomainItemRequest {
+  string id = 1;
+  string name = 2;
+  DomainItemStatus status = 3;
+}
+
+message DeleteDomainItemRequest {
+  string id = 1;
+}
+
+message DeleteDomainItemResponse {
+  bool success = 1;
 }

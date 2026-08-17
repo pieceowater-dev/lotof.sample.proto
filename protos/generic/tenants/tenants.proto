@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+option go_package = "app/internal/core/grpc/generated/generic/tenants";
+
+package tenants;
+
+// GatewayService is implemented by the Hub gateway. This service's own
+// gateway calls it as a client when it needs to notify Hub about tenant
+// provisioning (see internal/core/cfg/tenants.go in the svc template).
+service GatewayService {
+  rpc AddNamespaceTenant(AddNamespaceTenantRequest) returns (AddNamespaceTenantResponse);
+  // GetNamespaceHealth fans out to this gateway's own AppTenantsService
+  // client(s) and reports whether the tenant's schema is actually
+  // reachable/migrated for this product -- used by an admin console's
+  // on-demand namespace health check, not by any regular request path.
+  rpc GetNamespaceHealth(GetTenantStatusRequest) returns (GetNamespaceHealthResponse);
+}
+
+message AddNamespaceTenantResponse {
+  bool success = 1;
+}
+
+message AddNamespaceTenantRequest {
+  string namespace = 1;   // Namespace slug
+  string credentials = 2; // Encrypted "username:password"
+}
+
+message GetTenantStatusRequest {
+  string namespace = 1; // Namespace slug
+}
+
+message GetTenantStatusResponse {
+  bool schema_ready = 1;      // tenant migration state is "done" at the current target version, AND a live SELECT 1 against the tenant schema just succeeded
+  string applied_version = 2; // migration version actually applied for this tenant ("" if never migrated)
+  string target_version = 3;  // migration version this service currently expects
+}
+
+message GetNamespaceHealthResponse {
+  bool reachable = 1;      // false only when the call to AppTenantsService itself failed/timed out
+  bool schema_ready = 2;
+  string applied_version = 3;
+  string target_version = 4;
+  string error = 5;        // populated when reachable=false
+}
+
+// AppTenantsService is implemented by this domain's own msvc (the svc
+// template). Hub calls NewTenant when a namespace is created/attached to
+// this app so the service can provision (create schema + migrate) the
+// tenant on demand.
+service AppTenantsService {
+  rpc NewTenant(AddNamespaceTenantRequest) returns (AddNamespaceTenantResponse);
+  // GetTenantStatus reports this tenant's live migration/schema readiness --
+  // deliberately excluded from tenantReadinessMiddleware (see app.go) since
+  // its whole purpose is to report readiness, including when it's false.
+  rpc GetTenantStatus(GetTenantStatusRequest) returns (GetTenantStatusResponse);
+}

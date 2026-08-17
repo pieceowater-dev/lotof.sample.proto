@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option go_package = "app/internal/core/grpc/generated/generic/utils";
+
+package utils;
+
+// UserMetadata is the per-request identity/tenant context propagated over
+// gRPC metadata by the gateway and unpacked by the metadata middleware into
+// ctx (see internal/core/generic/middleware/userdata.middleware.go).
+message UserMetadata {
+  string user_id = 1;
+  string namespace = 2;    // Namespace slug — used to switch the tenant schema
+  string device_meta = 3;  // '<device_token>:<fingerprint>'
+}
