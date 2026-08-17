@@ -4,9 +4,11 @@ option go_package = "app/internal/core/grpc/generated/generic/tenants";
 
 package tenants;
 
-// GatewayService is implemented by the Hub gateway. This service's own
-// gateway calls it as a client when it needs to notify Hub about tenant
-// provisioning (see internal/core/cfg/tenants.go in the svc template).
+// GatewayService is implemented by THIS DOMAIN'S OWN gateway (the gtw
+// template's "gateway" module) -- Hub only knows each app's gateway address
+// (from namespace_apps), so it calls in here to provision a namespace, and
+// the gateway fans the request out to every backing microservice behind it
+// (today just one: this domain's own msvc, via AppTenantsService below).
 service GatewayService {
   rpc AddNamespaceTenant(AddNamespaceTenantRequest) returns (AddNamespaceTenantResponse);
   // GetNamespaceHealth fans out to this gateway's own AppTenantsService
